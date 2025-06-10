@@ -108,6 +108,7 @@ class ToastManager {
       console.error('Toast must have either a title or a description.');
       return;
     }
+
     const newToast: ToastItem = {
       id: Date.now(),
       exiting: false,

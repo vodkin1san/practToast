@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useSyncExternalStore } from 'react';
+import React, { useSyncExternalStore } from 'react';
 import styles from './styles/ToastContainer.module.scss';
 import ReactDOM from 'react-dom';
-import Toast, { ToastProps } from './Toast';
-import { toastManager, ToastItem, Position } from './ToastManager';
+import Toast from './Toast';
+import { toastManager } from './ToastManager';
 
 export interface ToastContainerProps {
   vertical?: 'top' | 'bottom';
