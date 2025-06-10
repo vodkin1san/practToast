@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import './styles/Toast.css';
+import styles from './styles/Toast.module.scss';
 
-export interface ToastProps {
-  title?: string;
-  description?: string;
+export type ToastProps = (
+  | { title: string; description?: string }
+  | { title?: string; description: string }
+) & {
   type?: 'info' | 'warning' | 'success';
   animation?: string;
   backgroundColor?: string;
@@ -11,7 +12,8 @@ export interface ToastProps {
   exiting?: boolean;
   onRemove?: () => void;
   onClick?: () => void;
-}
+};
+
 const Toast: React.FC<ToastProps> = ({
   title,
   description,
@@ -26,6 +28,7 @@ const Toast: React.FC<ToastProps> = ({
   useEffect(() => {
     setVisible(true);
   }, []);
+
   let animationClass = '';
   if (exiting) {
     animationClass = `toast-exit-${animation}`;
@@ -41,13 +44,13 @@ const Toast: React.FC<ToastProps> = ({
 
   return (
     <div
-      className={`toast ${type} ${animationClass}`}
+      className={`${styles.toast} ${styles[type]} ${styles[animationClass]}`}
       style={{ backgroundColor }}
       onAnimationEnd={handleAnimationEnd}
       onClick={onClick}
     >
-      {title && <div className='toats-header'>{title}</div>}
-      {description && <div className='toats-body'>{description}</div>}
+      {title && <div className={`${styles.toatsHeader}`}>{title}</div>}
+      {description && <div className={`${styles.toatsBody}`}>{description}</div>}
     </div>
   );
 };

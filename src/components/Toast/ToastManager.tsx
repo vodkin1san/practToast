@@ -1,10 +1,10 @@
 import { ToastProps } from './Toast';
 
-export interface ToastItem extends ToastProps {
+export type ToastItem = ToastProps & {
   id: number;
   exiting: boolean;
   position?: Position;
-}
+};
 
 export type Position = {
   vertical: 'top' | 'bottom';
@@ -13,7 +13,7 @@ export type Position = {
 
 class ToastManager {
   private listeners = new Set<() => void>();
-  private toast: ToastItem[] = [];
+  private toasts: ToastItem[] = [];
   private static instance: ToastManager;
   private toastConfig: Partial<ToastProps> = {};
   private position: Position = { vertical: 'top', horizontal: 'right' };
@@ -24,15 +24,15 @@ class ToastManager {
     this.listeners.forEach((callback) => callback());
   }
   public triggerRemoveToast(id: number): void {
-    const index = this.toast.findIndex((t) => t.id === id);
-    if (index !== -1 && !this.toast[index].exiting) {
-      this.toast = this.toast.map((t, i) => (i === index ? { ...t, exiting: true } : t));
+    const index = this.toasts.findIndex((t) => t.id === id);
+    if (index !== -1) {
+      this.toasts = this.toasts.map((t, i) => (i === index ? { ...t, exiting: true } : t));
       this.notifyListeners();
     }
   }
 
   public removeToast(id: number): void {
-    this.toast = this.toast.filter((t) => t.id !== id);
+    this.toasts = this.toasts.filter((t) => t.id !== id);
     this.notifyListeners();
   }
 
@@ -42,9 +42,21 @@ class ToastManager {
       this.listeners.delete(callback);
     };
   }
+
   public getSnapshot(): ToastItem[] {
-    return this.toast;
+    return this.toasts;
   }
+
+  public getToastsByPosition(
+    vertical: Position['vertical'],
+    horizontal: Position['horizontal'],
+  ): ToastItem[] {
+    return this.toasts.filter(
+      (toasts) =>
+        toasts.position?.vertical === vertical && toasts.position.horizontal === horizontal,
+    );
+  }
+
   public static getInstance() {
     if (!ToastManager.instance) {
       ToastManager.instance = new ToastManager();
@@ -88,8 +100,12 @@ class ToastManager {
   }
 
   public show() {
-    if (this.toast.length >= 3) {
+    if (this.toasts.length >= 3) {
       console.warn('Toast limit reached (max 3 toasts).');
+      return;
+    }
+    if (!this.toastConfig.title && !this.toastConfig.description) {
+      console.error('Toast must have either a title or a description.');
       return;
     }
     const newToast: ToastItem = {
@@ -97,14 +113,13 @@ class ToastManager {
       exiting: false,
       position: this.position,
       duration: this.duration,
-      ...this.toastConfig,
+      ...(this.toastConfig as ToastProps),
     };
-    this.toast = [...this.toast, newToast];
+    this.toasts = [...this.toasts, newToast];
     this.notifyListeners();
     if (newToast.duration && newToast.duration > 0) {
-      const timerId = setTimeout(() => {
+      setTimeout(() => {
         this.triggerRemoveToast(newToast.id);
-        clearTimeout(timerId);
       }, newToast.duration);
     }
     this.toastConfig = {};

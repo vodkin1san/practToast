@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
-import './styles/ToastContainer.css';
+import styles from './styles/ToastContainer.module.scss';
 import ReactDOM from 'react-dom';
 import Toast, { ToastProps } from './Toast';
 import { toastManager, ToastItem, Position } from './ToastManager';
@@ -14,23 +14,18 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
   vertical = 'top',
   horizontal = 'right',
 }) => {
-  const allToasts = useSyncExternalStore(
+  useSyncExternalStore(
     (cb) => toastManager.subscribe(cb),
     () => toastManager.getSnapshot(),
   );
+  const toastToShow = toastManager.getToastsByPosition(vertical, horizontal);
 
-  const toastToShow = allToasts.filter(
-    (toast) => toast.position?.vertical === vertical && toast.position.horizontal === horizontal,
-  );
-
-  //6
   return ReactDOM.createPortal(
-    <div className={`toast-container ${vertical}-${horizontal}`}>
+    <div className={`${styles.toastСontainer} ${styles[vertical]}-${styles[horizontal]}`}>
       {toastToShow.map((toast) => (
         <Toast
           key={toast.id}
           {...toast}
-          //7
           onRemove={() => toastManager.removeToast(toast.id)}
           onClick={() => {
             if (!toast.exiting) toastManager.triggerRemoveToast(toast.id);

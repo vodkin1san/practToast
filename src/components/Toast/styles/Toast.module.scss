@@ -1,0 +1,31 @@
+@import 'animations'; 
+@import 'colors';     
+
+.toast {
+  padding: 16px;
+  border-radius: 4px;
+  margin: 10px;
+  box-shadow: 0 2px 8px $color-black-shadow; 
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: $color-dark-grey;         
+  background-color: $color-white;   
+  opacity: 0;
+  transform: translateY(20px);
+  animation-fill-mode: forwards;
+}
+
+.toast.info {
+  border-left: 4px solid $color-info-border; 
+}
+
+.toast.warning {
+  border-left: 4px solid $color-warning-border; 
+}
+
+.toast.success {
+  border-left: 4px solid $color-success-border; 
+  background-color: $color-success-background; 
+  color: $color-success-text;          
+  font-weight: bold;
+}
