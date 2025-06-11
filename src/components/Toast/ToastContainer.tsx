@@ -33,12 +33,7 @@ const ToastContainer: React.FC = () => {
             toast.position.vertical === vertical && toast.position.horizontal === horizontal,
         );
 
-        function toCamelCase(str: string): string {
-          return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-        }
-
-        const rawPosition = `${vertical}-${horizontal}`; // "top-left"
-        const positionClassName = toCamelCase(rawPosition); // "topLeft"
+        const positionClassName = `${vertical}-${horizontal}`;
 
         return (
           <div
