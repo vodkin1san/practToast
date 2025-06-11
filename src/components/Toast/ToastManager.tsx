@@ -1,9 +1,12 @@
+import { DEFAULT_MAX_TOASTS, DEFAULT_TOAST_POSITION, DEFAULT_TOAST_DURATION } from './constants';
 import { ToastProps } from './Toast';
+import { ToastType } from './types/toast-types';
 
 export type ToastItem = ToastProps & {
   id: number;
   exiting: boolean;
-  position?: Position;
+  position: Position;
+  duration?: number;
 };
 
 export type Position = {
@@ -16,23 +19,25 @@ class ToastManager {
   private toasts: ToastItem[] = [];
   private static instance: ToastManager;
   private toastConfig: Partial<ToastProps> = {};
-  private position: Position = { vertical: 'top', horizontal: 'right' };
-  private duration: number = 3000;
+  private position: Position = { ...DEFAULT_TOAST_POSITION };
+  private duration: number = DEFAULT_TOAST_DURATION;
   private constructor() {}
 
   private notifyListeners(): void {
     this.listeners.forEach((callback) => callback());
   }
   public triggerRemoveToast(id: number): void {
-    const index = this.toasts.findIndex((t) => t.id === id);
+    const index = this.toasts.findIndex((toast) => toast.id === id);
     if (index !== -1) {
-      this.toasts = this.toasts.map((t, i) => (i === index ? { ...t, exiting: true } : t));
+      this.toasts = this.toasts.map((toast, indexToast) =>
+        indexToast === index ? { ...toast, exiting: true } : toast,
+      );
       this.notifyListeners();
     }
   }
 
   public removeToast(id: number): void {
-    this.toasts = this.toasts.filter((t) => t.id !== id);
+    this.toasts = this.toasts.filter((toast) => toast.id !== id);
     this.notifyListeners();
   }
 
@@ -51,10 +56,10 @@ class ToastManager {
     vertical: Position['vertical'],
     horizontal: Position['horizontal'],
   ): ToastItem[] {
-    return this.toasts.filter(
-      (toasts) =>
-        toasts.position?.vertical === vertical && toasts.position.horizontal === horizontal,
-    );
+    return this.toasts.filter((toast) => {
+      const effectivePosition = toast.position || DEFAULT_TOAST_POSITION;
+      return effectivePosition.vertical === vertical && effectivePosition.horizontal === horizontal;
+    });
   }
 
   public static getInstance() {
@@ -64,12 +69,12 @@ class ToastManager {
     return ToastManager.instance;
   }
 
-  public setPosition(horizontal: 'left' | 'right', vertical: 'top' | 'bottom') {
+  public setPosition(vertical: 'top' | 'bottom', horizontal: 'left' | 'right') {
     this.position = { vertical, horizontal };
     return this;
   }
 
-  public setType(type: 'info' | 'warning' | 'success') {
+  public setType(type: ToastType) {
     this.toastConfig.type = type;
     return this;
   }
@@ -100,7 +105,7 @@ class ToastManager {
   }
 
   public show() {
-    if (this.toasts.length >= 3) {
+    if (this.toasts.length >= DEFAULT_MAX_TOASTS) {
       console.warn('Toast limit reached (max 3 toasts).');
       return;
     }
@@ -124,8 +129,8 @@ class ToastManager {
       }, newToast.duration);
     }
     this.toastConfig = {};
-    this.position = { vertical: 'top', horizontal: 'right' };
-    this.duration = 3000;
+    this.position = DEFAULT_TOAST_POSITION;
+    this.duration = DEFAULT_TOAST_DURATION;
   }
 }
 

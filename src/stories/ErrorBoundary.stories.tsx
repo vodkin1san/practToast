@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react-webpack5';
 import ErrorBoundary from '../components/Toast/ErrorBoundary';
 import BuggyComponent from '../components/Toast/BuggyComponent';
 

@@ -1,31 +1,41 @@
-@import 'animations'; 
-@import 'colors';     
+@use 'animations';
+@use 'colors';   
 
 .toast {
   padding: 16px;
   border-radius: 4px;
   margin: 10px;
-  box-shadow: 0 2px 8px $color-black-shadow; 
+  box-shadow: 0 2px 8px colors.$color-black-shadow; 
   font-family: Arial, sans-serif;
   font-size: 14px;
-  color: $color-dark-grey;         
-  background-color: $color-white;   
+  color: colors.$color-dark-grey;         
+  background-color: colors.$color-white;   
   opacity: 0;
   transform: translateY(20px);
   animation-fill-mode: forwards;
 }
 
+.toastHeader {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.toastBody {
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
 .toast.info {
-  border-left: 4px solid $color-info-border; 
+  border-left: 4px solid colors.$color-info-border; 
 }
 
 .toast.warning {
-  border-left: 4px solid $color-warning-border; 
+  border-left: 4px solid colors.$color-warning-border; 
 }
 
 .toast.success {
-  border-left: 4px solid $color-success-border; 
-  background-color: $color-success-background; 
-  color: $color-success-text;          
+  border-left: 4px solid colors.$color-success-border; 
+  background-color: colors.$color-success-background; 
+  color: colors.$color-success-text;          
   font-weight: bold;
 }

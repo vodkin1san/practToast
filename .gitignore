@@ -3,3 +3,5 @@ dist/
 .env         
 .cache/      
 *.log  
+*storybook.log
+storybook-static

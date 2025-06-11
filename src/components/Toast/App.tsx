@@ -5,7 +5,7 @@ import ToastContainer from './ToastContainer';
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
-      <ToastContainer vertical='top' horizontal='right' />
+      <ToastContainer />
     </ErrorBoundary>
   );
 };

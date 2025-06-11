@@ -1,38 +1,62 @@
-import React, { useSyncExternalStore } from 'react';
-import styles from './styles/ToastContainer.module.scss';
+import React, { useEffect, useState } from 'react';
+import * as styles from './styles/ToastContainer.module.scss';
 import ReactDOM from 'react-dom';
 import Toast from './Toast';
-import { toastManager } from './ToastManager';
+import { toastManager, ToastItem, Position } from './ToastManager';
 
-export interface ToastContainerProps {
-  vertical?: 'top' | 'bottom';
-  horizontal?: 'left' | 'right';
-}
+const ALL_POSSIBLE_POSITIONS: Position[] = [
+  { vertical: 'top', horizontal: 'left' },
+  { vertical: 'top', horizontal: 'right' },
+  { vertical: 'bottom', horizontal: 'left' },
+  { vertical: 'bottom', horizontal: 'right' },
+];
 
-//зачем топ райт? - оптимизация для самого частого сценария.удобства для быстрого старта.
-const ToastContainer: React.FC<ToastContainerProps> = ({
-  vertical = 'top',
-  horizontal = 'right',
-}) => {
-  useSyncExternalStore(
-    (cb) => toastManager.subscribe(cb),
-    () => toastManager.getSnapshot(),
-  );
-  const toastToShow = toastManager.getToastsByPosition(vertical, horizontal);
+const ToastContainer: React.FC = () => {
+  const [allToasts, setAllToasts] = useState<ToastItem[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = toastManager.subscribe(() => {
+      setAllToasts(toastManager.getSnapshot());
+    });
+    setAllToasts(toastManager.getSnapshot());
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return ReactDOM.createPortal(
-    <div className={`${styles.toastСontainer} ${styles[vertical]}-${styles[horizontal]}`}>
-      {toastToShow.map((toast) => (
-        <Toast
-          key={toast.id}
-          {...toast}
-          onRemove={() => toastManager.removeToast(toast.id)}
-          onClick={() => {
-            if (!toast.exiting) toastManager.triggerRemoveToast(toast.id);
-          }}
-        />
-      ))}
-    </div>,
+    <>
+      {ALL_POSSIBLE_POSITIONS.map((pos, index) => {
+        const { vertical, horizontal } = pos;
+        const toastsInThisPosition = allToasts.filter(
+          (toast) =>
+            toast.position.vertical === vertical && toast.position.horizontal === horizontal,
+        );
+
+        function toCamelCase(str: string): string {
+          return str.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+        }
+
+        const rawPosition = `${vertical}-${horizontal}`; // "top-left"
+        const positionClassName = toCamelCase(rawPosition); // "topLeft"
+
+        return (
+          <div
+            key={index}
+            className={`${styles.toastContainer} ${(styles as any)[positionClassName]}`}
+          >
+            {toastsInThisPosition.map((toast) => (
+              <Toast
+                key={toast.id}
+                {...toast}
+                onRemove={() => toastManager.removeToast(toast.id)}
+                onClick={toast.onClick}
+              />
+            ))}
+          </div>
+        );
+      })}
+    </>,
     document.body,
   );
 };
