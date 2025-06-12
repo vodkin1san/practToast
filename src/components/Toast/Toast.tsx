@@ -1,6 +1,14 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import * as styles from './styles/Toast.module.scss';
 import { ToastType } from './types/toast-types';
+
+enum ToastState {
+  SHOWING = 'showing',
+  IDLE = 'idle',
+  HIDING = 'hiding',
+  DONE = 'done',
+}
 
 export type ToastProps = {
   title: string;
@@ -25,6 +33,15 @@ const Toast: React.FC<ToastProps> = ({
 }) => {
   const [visible, setVisible] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
+
+  const currentToastState: ToastState = (() => {
+    if (!visible && !isFadingOut) return ToastState.SHOWING;
+    if (visible && !isFadingOut) return ToastState.IDLE;
+    if (visible && isFadingOut) return ToastState.HIDING;
+    return ToastState.DONE;
+  })();
+
+  useEffect(() => {}, [currentToastState, title]);
 
   useEffect(() => {
     setVisible(true);
