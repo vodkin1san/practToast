@@ -1,12 +1,17 @@
-import { DEFAULT_MAX_TOASTS, DEFAULT_TOAST_POSITION, DEFAULT_TOAST_DURATION } from './constants';
+import {
+  DEFAULT_MAX_TOASTS,
+  DEFAULT_TOAST_POSITION,
+  DEFAULT_TOAST_DURATION,
+  DEFAULT_TOAST_TYPE,
+  DEFAULT_TOAST_ANIMATION,
+  DEFAULT_TOAST_BACKGROUND_COLOR,
+} from './constants';
 import { ToastProps } from './Toast';
 import { ToastType } from './types/toast-types';
 
 export type ToastItem = ToastProps & {
   id: number;
-  exiting: boolean;
   position: Position;
-  duration?: number;
 };
 
 export type Position = {
@@ -18,22 +23,14 @@ class ToastManager {
   private listeners = new Set<() => void>();
   private toasts: ToastItem[] = [];
   private static instance: ToastManager;
+
   private toastConfig: Partial<ToastProps> = {};
   private position: Position = { ...DEFAULT_TOAST_POSITION };
-  private duration: number = DEFAULT_TOAST_DURATION;
+
   private constructor() {}
 
   private notifyListeners(): void {
     this.listeners.forEach((callback) => callback());
-  }
-  public triggerRemoveToast(id: number): void {
-    const index = this.toasts.findIndex((toast) => toast.id === id);
-    if (index !== -1) {
-      this.toasts = this.toasts.map((toast, indexToast) =>
-        indexToast === index ? { ...toast, exiting: true } : toast,
-      );
-      this.notifyListeners();
-    }
   }
 
   public removeToast(id: number): void {
@@ -100,7 +97,12 @@ class ToastManager {
   }
 
   public setDuration(duration: number) {
-    this.duration = duration;
+    this.toastConfig.duration = duration;
+    return this;
+  }
+
+  public setOnClick(onClick: () => void) {
+    this.toastConfig.onClick = onClick;
     return this;
   }
 
@@ -109,28 +111,34 @@ class ToastManager {
       console.warn('Toast limit reached (max 3 toasts).');
       return;
     }
-    if (!this.toastConfig.title && !this.toastConfig.description) {
+
+    const finalToastProps: ToastProps = {
+      title: this.toastConfig.title || '',
+      description: this.toastConfig.description || '',
+      type: this.toastConfig.type || DEFAULT_TOAST_TYPE,
+      animation: this.toastConfig.animation || DEFAULT_TOAST_ANIMATION,
+      backgroundColor: this.toastConfig.backgroundColor || DEFAULT_TOAST_BACKGROUND_COLOR,
+      duration: this.toastConfig.duration || DEFAULT_TOAST_DURATION,
+      onRemove: () => {},
+      onClick: this.toastConfig.onClick || (() => {}),
+    };
+
+    if (!finalToastProps.title.trim() && !finalToastProps.description.trim()) {
       console.error('Toast must have either a title or a description.');
       return;
     }
 
     const newToast: ToastItem = {
       id: Date.now(),
-      exiting: false,
       position: this.position,
-      duration: this.duration,
-      ...(this.toastConfig as ToastProps),
+      ...finalToastProps,
     };
+
     this.toasts = [...this.toasts, newToast];
     this.notifyListeners();
-    if (newToast.duration && newToast.duration > 0) {
-      setTimeout(() => {
-        this.triggerRemoveToast(newToast.id);
-      }, newToast.duration);
-    }
+
     this.toastConfig = {};
-    this.position = DEFAULT_TOAST_POSITION;
-    this.duration = DEFAULT_TOAST_DURATION;
+    this.position = { ...DEFAULT_TOAST_POSITION };
   }
 }
 

@@ -1,5 +1,3 @@
-// .storybook/main.ts
-
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
 const config: StorybookConfig = {
@@ -31,7 +29,6 @@ const config: StorybookConfig = {
           options: {
             modules: {
               localIdentName: '[name]__[local]--[hash:base64:5]',
-              // exportLocalsConvention: 'camelCaseOnly',
             },
             importLoaders: 1,
           },

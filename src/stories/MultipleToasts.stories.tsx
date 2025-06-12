@@ -15,14 +15,14 @@ export const MultipleToast: Story = {
   render: () => {
     return (
       <div>
-        <ToastContainer vertical='top' horizontal='right' />
+        <ToastContainer />
         <button
           style={{ marginTop: '20px', padding: '10px 20px' }}
           onClick={() => {
             // Пытаемся добавить 5 уведомлений сразу
             for (let i = 0; i < 5; i++) {
               toastManager
-                .setPosition('right', 'top')
+                .setPosition('top', 'right')
                 .setType('info')
                 .setTitle(`Toast #${i + 1}`)
                 .setDescription(`Notification number ${i + 1}`)

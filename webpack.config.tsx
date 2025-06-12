@@ -1,3 +1,4 @@
+/** @type {import('webpack').Configuration} */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -34,11 +35,6 @@ module.exports = {
       },
     ],
   },
-  // externals: {
-  //   react: 'react',
-  //   'react-dom': 'react-dom',
-  //   // 'react-dom/client': 'ReactDOM',
-  // },
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',

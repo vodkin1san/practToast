@@ -19,6 +19,7 @@ const ToastContainer: React.FC = () => {
       setAllToasts(toastManager.getSnapshot());
     });
     setAllToasts(toastManager.getSnapshot());
+
     return () => {
       unsubscribe();
     };

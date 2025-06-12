@@ -9,7 +9,7 @@
     "module": "esnext",
     "jsx": "react-jsx",
     "moduleResolution": "node",
-    "types": ["react", "react-dom"],
+    "types": ["react", "react-dom", "node"],
     "declaration": true,
     "outDir": "dist/types",
     "baseUrl": "src"
