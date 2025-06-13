@@ -1,6 +1,6 @@
 import React from 'react';
-import ErrorBoundary from './ErrorBoundary';
-import ToastContainer from './ToastContainer';
+import { ErrorBoundary } from './ErrorBoundary';
+import { ToastContainer } from './ToastContainer';
 
 const App: React.FC = () => {
   return (

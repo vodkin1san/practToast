@@ -21,7 +21,7 @@ export type ToastProps = {
   onClick: () => void;
 };
 
-const Toast: React.FC<ToastProps> = ({
+export const Toast: React.FC<ToastProps> = ({
   title,
   description,
   type,
@@ -71,7 +71,7 @@ const Toast: React.FC<ToastProps> = ({
 
   return (
     <div
-      className={`${styles.toast} ${(styles as any)[type]} ${(styles as any)[animationClass]}`}
+      className={`${styles.toast} ${styles[type]} ${styles[animationClass]}`}
       style={{ backgroundColor }}
       onAnimationEnd={handleAnimationEnd}
       onClick={onClick}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import * as styles from './styles/ToastContainer.module.scss';
 import ReactDOM from 'react-dom';
-import Toast from './Toast';
+import { Toast } from './Toast';
 import { toastManager, ToastItem, Position } from './ToastManager';
 
 const ALL_POSSIBLE_POSITIONS: Position[] = [
@@ -37,10 +37,7 @@ const ToastContainer: React.FC = () => {
         const positionClassName = `${vertical}-${horizontal}`;
 
         return (
-          <div
-            key={index}
-            className={`${styles.toastContainer} ${(styles as any)[positionClassName]}`}
-          >
+          <div key={index} className={`${styles.toastContainer} ${styles[positionClassName]}`}>
             {toastsInThisPosition.map((toast) => (
               <Toast
                 key={toast.id}
@@ -57,4 +54,4 @@ const ToastContainer: React.FC = () => {
   );
 };
 
-export default ToastContainer;
+export { ToastContainer };

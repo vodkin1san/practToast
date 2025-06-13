@@ -1,18 +1,14 @@
-/** @type {import('webpack').Configuration} */
+/** @type {import('webpack').Configuration[]} */
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = {
+const commonConfig = {
+  mode: 'production',
   entry: './src/index.ts',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'index.js',
-    libraryTarget: 'umd',
-    globalObject: 'this',
-  },
+
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.scss', '.css'],
   },
+
   module: {
     rules: [
       {
@@ -20,24 +16,66 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: {
-            presets: [
-              '@babel/preset-env',
-              ['@babel/preset-react', { runtime: 'automatic' }],
-              '@babel/preset-typescript',
-            ],
-          },
         },
       },
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        test: /\.s?css$/,
+        exclude: /node_modules/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: true,
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+              },
+              sourceMap: true,
+              importLoaders: 2,
+            },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
+        ],
       },
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './public/index.html',
-    }),
-  ],
+
+  externals: {
+    react: 'react',
+    'react-dom': 'react-dom',
+  },
 };
+
+const cjsConfig = {
+  ...commonConfig,
+  output: {
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'dist'),
+    library: {
+      name: 'reactToastManager',
+      type: 'umd',
+    },
+    globalObject: 'this',
+  },
+};
+
+const esmConfig = {
+  ...commonConfig,
+  output: {
+    filename: 'esm/index.js',
+    path: path.resolve(__dirname, 'dist'),
+    library: {
+      type: 'module',
+    },
+  },
+  experiments: {
+    outputModule: true,
+  },
+};
+
+module.exports = [cjsConfig, esmConfig];
