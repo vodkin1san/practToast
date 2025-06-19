@@ -1,0 +1,33 @@
+.toastContainer {
+  position: fixed; 
+  display: flex;
+  flex-direction: column; 
+  z-index: 1000;
+  padding: 10px; 
+  gap: 10px; 
+  pointer-events: none;
+}
+
+.top-left {
+  top: 0;
+  left: 0;
+  align-items: flex-start;
+}
+
+.top-right {
+  top: 0;
+  right: 0;
+  align-items: flex-end;
+}
+
+.bottom-left {
+  bottom: 0;
+  left: 0;
+  align-items: flex-start;
+}
+
+.bottom-right {
+  bottom: 0;
+  right: 0;
+  align-items: flex-end;
+}
